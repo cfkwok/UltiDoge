@@ -1,0 +1,26 @@
+{
+  "name": "UltiDoge",
+  "version" : "0.0.0.1",
+  "manifest_version": 2,
+  "browser_action": {
+        "default_icon" : "ulitdoge.png",
+        "default_title" : "My Company Deals",
+	"default_popup"	:"popup.html"
+     },
+	 "background":{
+	 "scripts":["jquery-1.11.2.js","eventpage.js"],
+	 "persistent":false
+	 },
+	 "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["jquery-1.11.2.js","jquery-ui.js"],
+	  "content_scripts": ["dialog.css"],
+	  "all_frames": true
+    }
+	],	 
+    "permissions": ["notifications","contextMenus","http://localhost:54256/","activeTab","tabs","management","downloads"],
+ "icons": {
+	  "48": "ulitdoge_48.png"
+        }
+}
