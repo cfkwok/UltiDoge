@@ -5,7 +5,7 @@ var redirectUrl;
 chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 	if(changeInfo.url!=null)
 	{
-		var actionurl="http://localhost:10829/home/HasDealsInSite?url="+changeInfo.url+"&userId=T.B.D";
+		var actionurl="http://localhost:10829/home/HasDealsInSite?url="+changeInfo.url+"&userId="+localStorage["UltiProUserId"];
 
 
 	   var currentUrl = changeInfo.url;

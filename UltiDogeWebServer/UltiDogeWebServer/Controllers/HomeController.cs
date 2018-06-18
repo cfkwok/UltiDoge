@@ -135,6 +135,15 @@ namespace UltiDogeWebServer.Controllers
         }
 
         [HttpGet]
+        public ActionResult LoginToUltiPro(string userId, string password)
+        {
+            //T.B.D. From db
+            if (userId.ToLower() == "ramesh1263")
+                return Json("Ramesh Chander", JsonRequestBehavior.AllowGet);
+            return Json("Failure", JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
         public ActionResult GetDealPage(string userId, string url)
         {
             ViewBag.Title = "Home Page";
