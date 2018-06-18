@@ -22,12 +22,23 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 			   type: "GET",
 			   success: function (result) {
 				   //alert("success->"+JSON.stringify(result));
-				   if(result["TypeOfDeal"]!='None'){
+				   if(result["TypeOfDeal"]!='') {
+				   		iconUrl = '';
+				   		if (result["TypeOfDeal"] == "Discount") {
+				   			iconUrl = 'https://pics.me.me/fat-doge-8386016.png';
+				   		}
+				   		else if (result["TypeOfDeal"] == "Gift Card") {
+				   			iconUrl = 'https://apprecs.org/ios/images/app-icons/256/4e/851878478.jpg';
+				   		}
+				   		else {
+				   			iconUrl = 'https://shibe.digital/wishing_well/assets/og_doge.png';
+				   		}
+
 						redirectUrl=result["OnClickUrl"];
 						chrome.notifications.create(
 							'name-for-notification',{   
 							type: 'basic', 
-							iconUrl:result["IconUrl"], 
+							iconUrl: iconUrl, 
 							title: result["TypeOfDeal"]+"..Woof Woof", 
 							message: result["Message"]
 							},
