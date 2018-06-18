@@ -4,7 +4,7 @@
   "manifest_version": 2,
   "browser_action": {
         "default_icon" : "ulitdoge.png",
-        "default_title" : "My Company Deals",
+        "default_title" : "My Company Perks",
 	"default_popup"	:"popup.html"
      },
 	 "background":{
