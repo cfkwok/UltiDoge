@@ -1,9 +1,34 @@
 
 var sharesnipTabId=0;
 							
-function loginWithWebpop()
+function loginWithUltiPro()
 {
-							chrome.windows.create({
+		var actionurl="http://localhost:10829/home/LoginToUltiPro?userId="+document.getElementById('ultiProUserName').value;
+
+	   $.ajax(
+		   {
+			   url: actionurl,
+			   contentType: "application/json;",
+			   dataType: "json",
+			   type: "GET",
+			   success: function (result) {
+				   if(result!="Failure")
+				   {
+						document.getElementById("ultiDogeLogin").style.display = "none";					
+						document.getElementById("ultiDogeLogout").style.display = "block";
+						localStorage["UltiProUserId"]=document.getElementById('ultiProUserName').value;
+						localStorage["UltiProUserName"]=result;
+				   }
+				   else
+				   {
+					   document.getElementById('ultiProUserName').value="";
+					   document.getElementById('ultiProPassword').value="";
+				   }
+
+			   }
+		   });	
+	
+/* 							chrome.windows.create({
 							url:'https://secure.sharefile.com/oauth/authorize?response_type=code&client_id=CwSkWnXRlhU4wFRTVy0IwY11S&redirect_uri=https%3A%2F%2Fsecure.sharefile.com%2Foauth%2Foauthcomplete.aspx&state=&requirev3=true',
 							type: 'popup',
 							focused: true,
@@ -46,7 +71,7 @@ function loginWithWebpop()
 										}
 								   }
 								}); 
-						});
+						}); */
 }
 
 
@@ -133,52 +158,24 @@ function RetriveAndDisplayColTable(refresh)
 	}	
 }
 
-function RowButtonClick(name)
-{
-	alert('clicked'+name);
-}
-
 function ResetLogin()
 {
-	document.getElementById("shareSnipLoginHeader").style.display = "block";
-	document.getElementById("shareSniploginFormId").style.display = "block";
-	document.getElementById("shareSniperrormessageId").style.display = "none";	
-	document.getElementById("shareSniphomeFormId").style.display = "none";	
-	localStorage.removeItem("access_token");
-	localStorage.removeItem("userid");
-	localStorage.removeItem("subDomain");
-		
-	for (i = 0; i < localStorage["NumberOfColaborations"]; i++) {
-		var tabletitleId="TableDoc"+i;
-		var tablekeywordId="TableKeywords"+i;
-		localStorage.removeItem(tabletitleId);
-		localStorage.removeItem(tablekeywordId);	
-	}	
-	localStorage.removeItem("NumberOfColaborations");		
+	document.getElementById("ultiDogeLogin").style.display = "bock";					
+	document.getElementById("ultiDogeLogout").style.display = "none";	
+	localStorage.removeItem("UltiProUserName");
+	localStorage.removeItem("UltiProUserid");
+
 }
 function logout()
 {
-	console.log("logout called");
-	var xhrLogout = new XMLHttpRequest();
-	var logoutUrl="http://localhost:62988/home/Logout?userId="+localStorage["access_token"]+"&subdomain="+localStorage["subDomain"];
-	xhrLogout.open("GET", logoutUrl);
-	xhrLogout.send();
-	
-	//remove all rows of table except header
-	var table = document.getElementById("shareSnipColaborationTable");
-	while(table.rows.length > 1) {
-		  table.deleteRow(1);
-	}
 	ResetLogin();
 }
 
 $(document).ready(function(){
 
-	var oauth_token = localStorage.getItem("access_token");
-	console.log("typeof "+ typeof oauth_token);
-	console.log("Values of oauth_token is: " + oauth_token);
-	document.getElementById("shareSniploginButton").addEventListener("click", loginWithWebpop);
-	document.getElementById("shareSniplogoutButton").addEventListener("click", logout);
+	var oauth_token = localStorage.getItem("UltiProUserId");
+	document.getElementById("ultiProloginButton").addEventListener("click", loginWithUltiPro);
+	document.getElementById("ultiPrologoutButton").addEventListener("click", logout);
 
 	if(!oauth_token)
 	{
@@ -187,77 +184,14 @@ $(document).ready(function(){
 	}
 	else
 	{
-		console.log("User already logged in. Showing log out form.");
-
-		document.getElementById("shareSniphomeFormId").style.display = "block";
-		RetriveAndDisplayColTable(false);
+		document.getElementById("ultiDogeLogin").style.display = "none";					
+		document.getElementById("ultiDogeLogout").style.display = "block";
+		//alert(localStorage["UltiProUserName"]);
+		//alert(localStorage["UltiProUserId"]);
 	
-		
 	}
 });
 
-
-// function login()/*function to check userid & password*/
-// {
-	// console.log("Inside login()");
-
-	// document.getElementById("shareSnipLoginHeader").style.display = "none";
-	// document.getElementById("shareSniploginFormId").style.display = "none";
-	// document.getElementById("shareSniperrormessageId").style.display = "none";
-
-	// var form = document.forms["loginForm"];
-	// try
-	// {
-		// var access_token = null;
-		// var xhr = new XMLHttpRequest();
-		// var userId = form.userid.value;
-		// var password = form.pswrd.value;
-		// var subDomain = form.subDomain.value;
-		// var url = "https://" + subDomain + ".sharefile.com/oauth/token?grant_type=password&client_id=qhRBpcI7yj931hV2wzGlmsi6b&client_secret=Nu8JDCC9EK598e4PmA2NBbF09oYBS8&username=" + userId + "&password=" + password;
-
-		// console.log("ShareFile Url is: " + url);
-		
-		// xhr.open("GET", url);
-		// xhr.send();
-
-		// xhr.onerror = function(e) {
-    		// console.log("Error while sending OAuth request. Status: " + e.target.status);
-		// };
-
-		// console.log(xhr.status);
-		// console.log(xhr.statusText);
-
-		// xhr.onreadystatechange = function() {
-	    	// if (xhr.readyState == 4 && xhr.status == 200) {
-					// console.log("readyState == 4 && status == 200")
-					// var myArr = JSON.parse(xhr.responseText);
-					// access_token = myArr["access_token"];
-					// console.log("AccessToken: " + access_token);
-					// localStorage["access_token"] = access_token;
-				
-					// localStorage["userid"] = userId;
-					// localStorage["subDomain"] = subDomain;
-					// console.log("Added accessToken to localStorage: " + localStorage["access_token"]);
-					// RetriveAndDisplayColTable(true);
-					
-
-
-	    	// }
-			// else if (xhr.readyState == 4 && xhr.status == 400)
-			// {
-				// console.log('Login unsuccesful. Please enter correct username/password');
-				// document.getElementById("shareSnipLoginHeader").style.display = "block";
-				// document.getElementById("shareSniploginFormId").style.display = "block";	
-				// document.getElementById("shareSniperrormessageId").style.display = "block";				
-			// }
-		// }
-
-	// }
-	// catch (e)
-	// {
-		// console.log("Excpetion in login(): ", e);
-	// }
-// }
 
 
 
