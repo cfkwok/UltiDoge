@@ -34,7 +34,7 @@ namespace UltiDogeWebServer.Controllers
         [HttpGet]
         public ActionResult HasDealsInSite(string userId, string url, int giftCardOption, int charityOption, int dealsOption)
         {
-            List<ActionResult> jsonModels = new List<ActionResult>();
+            List<DealsModel> dealModels = new List<DealsModel>();
             ViewBag.Message = "Your application description page.";
 
             var collection = context.db.GetCollection<DealsModel>("Benefits");
@@ -53,41 +53,38 @@ namespace UltiDogeWebServer.Controllers
                         if (!popupTimers.ContainsKey(userAndMessage))
                         {
                             popupTimers.Add(userAndMessage, DateTime.Now);
-                            jsonModels.Add(Json(new DealsModel()
+                            dealModels.Add(new DealsModel()
                                 {
                                     TypeOfDeal = userBenefit.TypeOfDeal,
                                     Message = userBenefit.Message,
                                     OnClickUrl = userBenefit.OnClickUrl
-                                },
-                                JsonRequestBehavior.AllowGet));
+                                }
+                            );
                         }
-                        else
+                        else if (popupTimers[userAndMessage].AddSeconds(10) < DateTime.Now)  // If this time has passed, then add the popup in list again
                         {
-                            // If this time has passed, then add the popup in list again
-                            if (popupTimers[userAndMessage].AddSeconds(10) < DateTime.Now)
-                            {
-                                jsonModels.Add(Json(new DealsModel()
-                                    {
-                                        TypeOfDeal = userBenefit.TypeOfDeal,
-                                        Message = userBenefit.Message,
-                                        OnClickUrl = userBenefit.OnClickUrl
-                                    },
-                                    JsonRequestBehavior.AllowGet));
-
-                                popupTimers[userAndMessage] = DateTime.Now;
-                            }
+                            dealModels.Add(new DealsModel()
+                                {
+                                    TypeOfDeal = userBenefit.TypeOfDeal,
+                                    Message = userBenefit.Message,
+                                    OnClickUrl = userBenefit.OnClickUrl
+                                }
+                            );
+                            popupTimers[userAndMessage] = DateTime.Now;
                         }
                     }
                 }
             }
 
-            return jsonModels.Count == 0
-                ? Json(new DealsModel()
-                    {
-                        TypeOfDeal = string.Empty
-                    },
-                    JsonRequestBehavior.AllowGet)
-                : jsonModels[0];
+            if (dealModels.Count == 0)
+            {
+                dealModels.Add(new DealsModel()
+                {
+                    TypeOfDeal = string.Empty
+                });
+            }
+
+            return Json(dealModels, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
