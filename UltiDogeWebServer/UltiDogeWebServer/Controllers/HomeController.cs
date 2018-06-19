@@ -12,12 +12,14 @@ namespace UltiDogeWebServer.Controllers
 {
     public class HomeController : Controller
     {
-        private Dictionary<Tuple<string, string>, DateTime> popupTimers = new Dictionary<Tuple<string, string>, DateTime>();
-        private MongoContext context;
+        private static Dictionary<Tuple<string, string>, DateTime> popupTimers = new Dictionary<Tuple<string, string>, DateTime>();
+        private MongoContext context = new MongoContext();
+        public int minuteTimeout = 5;
 
         public HomeController()
         {
-            context = new MongoContext();
+//            context = new MongoContext();
+//            popupTimers = new Dictionary<Tuple<string, string>, DateTime>();
         }
 
         //Tools -> Options -> Debugging -> General and turn off the setting Enable JavaScript Debugging for ASP.NET
@@ -34,12 +36,8 @@ namespace UltiDogeWebServer.Controllers
         {
             userId = "chunk";  //Temp
 
-            List<DealsModel> dealModels = new List<DealsModel>();
+            List<ActionResult> jsonModels = new List<ActionResult>();
             ViewBag.Message = "Your application description page.";
-
-            var userDeal = string.Empty;
-            var userMessage = string.Empty;
-            var userUrl = string.Empty;
 
             var collection = context.db.GetCollection<DealsModel>("Benefits");
 
@@ -51,87 +49,47 @@ namespace UltiDogeWebServer.Controllers
                 {
                     if (url.ToLower().Contains(perk))
                     {
-                        dealModels.Add(userBenefit);
+                        Tuple<string, string> userAndMessage =
+                            new Tuple<string, string>(userId, userBenefit.Message);
 
-//                        jsonModels.Add(Json(new DealsModel()
-//                        {
-//                            TypeOfDeal = userBenefit.TypeOfDeal,
-//                            Message = userBenefit.Message,
-//                            OnClickUrl = userBenefit.OnClickUrl
-//                        },
-//                        JsonRequestBehavior.AllowGet));
+                        if (!popupTimers.ContainsKey(userAndMessage))
+                        {
+                            popupTimers.Add(userAndMessage, DateTime.Now);
+                            jsonModels.Add(Json(new DealsModel()
+                                {
+                                    TypeOfDeal = userBenefit.TypeOfDeal,
+                                    Message = userBenefit.Message,
+                                    OnClickUrl = userBenefit.OnClickUrl
+                                },
+                                JsonRequestBehavior.AllowGet));
+                        }
+                        else
+                        {
+                            // If this time has passed, then add the popup in list again
+                            if (popupTimers[userAndMessage].AddSeconds(10) < DateTime.Now)
+                            {
+                                jsonModels.Add(Json(new DealsModel()
+                                    {
+                                        TypeOfDeal = userBenefit.TypeOfDeal,
+                                        Message = userBenefit.Message,
+                                        OnClickUrl = userBenefit.OnClickUrl
+                                    },
+                                    JsonRequestBehavior.AllowGet));
+
+                                popupTimers[userAndMessage] = DateTime.Now;
+                            }
+                        }
                     }
                 }
             }
 
-            foreach (DealsModel deal in dealModels)
-            {
-                if (userDeal.Equals(string.Empty))
-                {
-                    userDeal = deal.TypeOfDeal;
-                    userMessage = deal.Message;
-                    userUrl = deal.OnClickUrl;
-                }
-                else if (!userDeal.Contains(deal.TypeOfDeal))
-                {
-                    userDeal += $"{userDeal}, {deal.TypeOfDeal}";
-                    userMessage += $"{userMessage}\n{deal.Message} ({deal.OnClickUrl})";
-                }
-
-            }
-            //            if (url?.ToLower().Contains("amazon") == true)
-            //            {
-            //                return Json(new DealsModel()
-            //                {
-            //                    TypeOfDeal = "Discount",
-            //                    Message = $"Congragulations!! Your employer offers Discount in this site. Learn More? {num}",
-            //                    //IconUrl = "https://pics.me.me/fat-doge-8386016.png",
-            //                    OnClickUrl = "http://localhost:10829/home/GetDealPage"
-            //                },
-            //                JsonRequestBehavior.AllowGet);
-            //            }
-            //            else if (url?.ToLower().Contains("starbucks") == true)
-            //            {
-            //                return Json(new DealsModel()
-            //                {
-            //                    TypeOfDeal = "Gift Card",
-            //                    Message = $"Congragulations!! You have Gift Card in this site. Use it? {num}",
-            //                    //IconUrl = "https://apprecs.org/ios/images/app-icons/256/4e/851878478.jpg",
-            //                    OnClickUrl = "http://localhost:10829/home/GetGiftCardPage"
-            //                },
-            //                JsonRequestBehavior.AllowGet);
-            //            }
-            //            else if (url?.ToLower().Contains("redcross") == true)
-            //            {
-            //                return Json(new DealsModel()
-            //                {
-            //                    TypeOfDeal = "Charity",
-            //                    Message = "Your donation will be matched 1:1 by employer. Donate?",
-            //                    //IconUrl = "https://shibe.digital/wishing_well/assets/og_doge.png",
-            //                    OnClickUrl = "http://localhost:10829/home/GetCharityPage"
-            //                },
-            //                JsonRequestBehavior.AllowGet);
-            //            }
-
-            Tuple<string, string> userAndMessage =
-                new Tuple<string, string>(userDeal, userMessage);
-            if (!popupTimers.ContainsKey(userAndMessage))
-            {
-                popupTimers.Add(userAndMessage, DateTime.Now);
-            }
-            else
-            {
-                popupTimers[userAndMessage] = DateTime.Now;
-            }
-
-            // Implement pop up blocker logic
-            return Json(new DealsModel()
-                {
-                    TypeOfDeal = userDeal,
-                    Message = userMessage,
-                    OnClickUrl = userUrl
-                },
-                JsonRequestBehavior.AllowGet);
+            return jsonModels.Count == 0
+                ? Json(new DealsModel()
+                    {
+                        TypeOfDeal = string.Empty
+                    },
+                    JsonRequestBehavior.AllowGet)
+                : jsonModels[0];
         }
 
         [HttpGet]

@@ -1,0 +1,160 @@
+UltiDoge Mongo Queries
+
+DB: UltiDoge
+Collection: Benefits
+	- User_id
+	- category
+	- Message
+	- Url_popup
+	- Perks[]
+
+Collection: Users
+	- User_id
+	- Company
+
+db.createUser(
+	{
+		user: "demo",
+		pwd: "user",
+		roles: [
+			{
+				role: "readWrite",
+				db: "UltiDoge"
+			}
+		]
+	}
+)
+
+db.Benefits.insert(
+	{
+		user_id: "chunk",
+		category: "Discount",
+		message: "You have a discount on this website!",
+		url_popup: "localhost/discount",
+		perks: ["amazon.com", "hertz.com", "papajohns.com"]
+	}
+)
+
+db.Benefits.insert(
+	{
+		user_id: "chunk",
+		category: "Discount",
+		message: "You have a fee coverage deal for Coinbase.",
+		url_popup: "www.ultimatesoftware.com",
+		perks: ["coinbase.com"]
+	}
+)
+
+db.Benefits.insert(
+	{
+		user_id: "chunk",
+		category: "Gift Card",
+		message: "You have a gift card available for here.",
+		url_popup: "www.ultimatesoftware.com",
+		perks: ["amazon.com", "coinbase.com"]
+	}
+)
+
+db.Benefits.insert(
+	{
+		user_id: "chunk",
+		category: "Charity",
+		message: "Your company has a partnership with this charity.",
+		url_popup: "www.ultimatesoftware.com",
+		perks: ["redcross.com"]
+	}
+)
+
+db.Benefits.insert(
+	{
+		user_id: "rameshc",
+		category: "Gift Card",
+		message: "You have a gift card available for here.",
+		url_popup: "www.ultimatesoftware.com",
+		perks: ["ebay.com"]
+	}
+)
+
+db.Benefits.insert(
+	{
+		user_id: "rameshc",
+		category: "Discount",
+		message: "You have a gift card available for here.",
+		url_popup: "www.ultimatesoftware.com",
+		pperks: ["amazon.com", "hertz.com", "papajohns.com"]
+	}
+)
+
+db.Benefits.insert(
+	{
+		user_id: "rameshc",
+		category: "Discount",
+		message: "You have a fee coverage deal for Coinbase.",
+		url_popup: "www.ultimatesoftware.com",
+		perks: ["coinbase.com"]
+	}
+)
+
+db.Benefits.insert(
+	{
+		user_id: "rameshc",
+		category: "Charity",
+		message: "Your company has a partnership with this charity.",
+		url_popup: "www.ultimatesoftware.com",
+		perks: ["redcross.com"]
+	}
+)
+
+db.Benefits.insert(
+	{
+		user_id: "derricko",
+		category: "Charity",
+		message: "Your company has a partnership with this charity.",
+		url_popup: "www.tesla.com",
+		perks: ["feedingamerica.org"]
+	}
+)
+
+db.Benefits.insert(
+	{
+		user_id: "derricko",
+		category: "Discount",
+		message: "You have a discount on this website.",
+		url_popup: "www.tesla.com",
+		perks: ["walmart.com", "delta.com"]
+	}
+)
+
+db.Benefits.insert(
+	{
+		user_id: "derricko",
+		category: "Gift Card",
+		message: "You have a gift card for this website.",
+		url_popup: "www.tesla.com",
+		perks: ["gamestop.com"]
+	}
+)
+
+db.Users.insert(
+	{
+		user_id: "chunk",
+		company: "Ultimate Software Inc.",
+		name: "Fai Kwok"
+	}
+)
+
+db.Users.insert(
+	{
+		user_id: "rameshc",
+		company: "Ultimate Software Inc.",
+		name: "Ramesh Chander"
+	}
+)
+
+db.Users.insert(
+	{
+		user_id: "derricko",
+		company: "Tesla Inc.",
+		name: "Derrick Serbia"
+	}
+)
