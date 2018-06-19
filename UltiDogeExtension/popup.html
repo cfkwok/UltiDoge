@@ -109,7 +109,39 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;      
 }
-</style>
+
+.slidecontainer {
+    width: 100px;
+}
+
+.slider {
+    -webkit-appearance: none;
+	display: inline;
+    width: 100px;
+    height: 15px;
+    border-radius: 5px;
+    background: #d3d3d3;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+.slider:hover {
+    opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background: #4CAF50;
+    cursor: pointer;
+}
+
+​</style>
 </head>
 <body>
 
@@ -127,13 +159,44 @@ body {
     </form>
   </div>
 	<div id="ultiDogeLogout" class="form" style="display:none">
-	<h2> Welcome Ramesh Chander</h2>
+	<h2> <p id= "WelcomeText">Welcome</p></h2>
+	<h3>UltiDoge will notify of your relevant gift cards and Company perks as you browse websites</h3>
 	<br />
+	<fieldset>
+	<legend align="left"><big>Notification Configuration:</big></legend>
+	<div>
+	<p align="left"><h3>
+	<span style="margin-left:70px;font-weight:bold;">None</span>
+		<span style="margin-left:40px;width:50px;font-weight:bold;">Limited</span>
+				<span style="margin-left:55px;font-weight:bold;"><strong>All</strong></span></h3></p>
+	</div>
+	<div>
+	<p><h3>Deals:
+	<span class="slidecontainer" style="margin-left:26px">
+		<input  style="width:230px;" name="DealsRange" type="range" min="1" max="3" value="2" steps="1" class="slider" id="DealRange">
+	</span>
+	</h3>
+	</p>
+	</div>
+	<div>
+	<p><h3>GiftCards:
+	<span class="slidecontainer" style="margin-left:5px">
+		<input  style="width:230px;" name="DealsRange" type="range" min="1" max="3" value="2" steps="1" class="slider" id="GiftCardRange">
+	</span>
+	</h3>
+	</p>
+	</div>
+		<div>
+	<p><h3>Charity:
+	<span class="slidecontainer" style="margin-left:20px">
+		<input  style="width:230px;" name="DealsRange" type="range" min="1" max="3" value="2" steps="1" class="slider" id="CharityRange">
+	</span>
+	</h3>
+	</p>
+	</div>
+	</fieldset>
 	<br />
-	<h3>UltiDoge will show your relevant gift cards and Comany perks as you navigate websites</h3>
-	<br />
-	<br />
-	<a href="https://ultihome.ultimatesoftware.com/spaces/406/Cards">Click Here to see all company Perks</a>
+	<a href="https://ultihome.ultimatesoftware.com/spaces/406/Cards" target="_blank"><big>Click Here to see all company Perks</big></a>
 	<br />
 	<br />
 	<form class="logout-form">
