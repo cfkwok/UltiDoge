@@ -32,7 +32,7 @@ namespace UltiDogeWebServer.Controllers
         }
 
         [HttpGet]
-        public ActionResult HasDealsInSite(string userId, string url)
+        public ActionResult HasDealsInSite(string userId, string url, int giftCardOption, int charityOption, int dealsOption)
         {
             List<ActionResult> jsonModels = new List<ActionResult>();
             ViewBag.Message = "Your application description page.";

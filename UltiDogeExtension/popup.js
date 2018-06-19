@@ -19,6 +19,10 @@ function loginWithUltiPro()
 						document.getElementById("ultiDogeLogout").style.display = "block";
 						localStorage["UltiProUserId"]=document.getElementById('ultiProUserName').value;
 						localStorage["UltiProUserName"]=result;
+						//default values
+						localStorage["UltiProDealOption"]=2;
+						localStorage["UltiProCharityOption"]=3;
+						localStorage["UltiProGiftCardOption"]=3;						
 						document.getElementById("WelcomeText").innerHTML="Welcome "+result;
 				   }
 				   else
@@ -39,11 +43,29 @@ function ResetLogin()
 	document.getElementById("ultiDogeLogout").style.display = "none";	
 	localStorage.removeItem("UltiProUserName");
 	localStorage.removeItem("UltiProUserId");
-
+	localStorage.removeItem("UltiProDealOption");
+	localStorage.removeItem("UltiProCharityOption");
+	localStorage.removeItem("UltiProGiftCardOption");
 }
 function logout()
 {
 	ResetLogin();
+}
+
+function DealChanged()
+{
+	//alert("Deal Changed to " + this.value);
+	localStorage["UltiProDealOption"]=this.value;
+}
+
+function GiftCardChanged()
+{
+	localStorage["UltiProGiftCardOption"]=this.value;
+}
+
+function CharityChanged()
+{
+	localStorage["UltiProCharityOption"]=this.value;
 }
 
 $(document).ready(function(){
@@ -51,6 +73,18 @@ $(document).ready(function(){
 	var oauth_token = localStorage.getItem("UltiProUserId");
 	document.getElementById("ultiProloginButton").addEventListener("click", loginWithUltiPro);
 	document.getElementById("ultiPrologoutButton").addEventListener("click", logout);
+	document.getElementById("DealRange").addEventListener("change", DealChanged);
+	document.getElementById("GiftCardRange").addEventListener("change", GiftCardChanged);
+	document.getElementById("CharityRange").addEventListener("change", CharityChanged);
+	var dealoption_token = localStorage.getItem("UltiProDealOption");
+	//default values
+	if(!dealoption_token)
+	{
+		alert("Reinitialize");
+		localStorage["UltiProDealOption"]=2;
+		localStorage["UltiProCharityOption"]=3;
+		localStorage["UltiProGiftCardOption"]=3;
+	}
 
 	if(!oauth_token)
 	{
@@ -62,8 +96,10 @@ $(document).ready(function(){
 		document.getElementById("ultiDogeLogin").style.display = "none";					
 		document.getElementById("WelcomeText").innerHTML="Welcome "+localStorage["UltiProUserName"];
 		document.getElementById("ultiDogeLogout").style.display = "block";
-
-	
+		
+		document.getElementById("DealRange").value=localStorage["UltiProDealOption"];
+		document.getElementById("GiftCardRange").value=localStorage["UltiProGiftCardOption"];
+		document.getElementById("CharityRange").value=localStorage["UltiProCharityOption"];	
 	}
 });
 
