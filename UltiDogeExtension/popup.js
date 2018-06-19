@@ -21,8 +21,11 @@ function loginWithUltiPro()
 						localStorage["UltiProUserName"]=result;
 						//default values
 						localStorage["UltiProDealOption"]=2;
-						localStorage["UltiProCharityOption"]=3;
-						localStorage["UltiProGiftCardOption"]=3;						
+						localStorage["UltiProCharityOption"]=2;
+						localStorage["UltiProGiftCardOption"]=2;	
+						document.getElementById("DealRange").value=localStorage["UltiProDealOption"];
+						document.getElementById("GiftCardRange").value=localStorage["UltiProGiftCardOption"];
+						document.getElementById("CharityRange").value=localStorage["UltiProCharityOption"];						
 						document.getElementById("WelcomeText").innerHTML="Welcome "+result;
 				   }
 				   else
@@ -82,8 +85,8 @@ $(document).ready(function(){
 	{
 		//alert("Reinitialize");
 		localStorage["UltiProDealOption"]=2;
-		localStorage["UltiProCharityOption"]=3;
-		localStorage["UltiProGiftCardOption"]=3;
+		localStorage["UltiProCharityOption"]=2;
+		localStorage["UltiProGiftCardOption"]=2;
 	}
 
 	if(!oauth_token)

@@ -1,3 +1,6 @@
+use UltiDoge
+db.dropDatabase()
+
 db.Benefits.insert(
 	{
 		user_id: "chunk",
