@@ -103,6 +103,7 @@ $(document).ready(function(){
 		document.getElementById("DealRange").value=localStorage["UltiProDealOption"];
 		document.getElementById("GiftCardRange").value=localStorage["UltiProGiftCardOption"];
 		document.getElementById("CharityRange").value=localStorage["UltiProCharityOption"];	
+		document.getElementById("WebsitePerks").href=localStorage["UltiWebsitePerk"];	
 	}
 });
 
