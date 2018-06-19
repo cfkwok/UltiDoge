@@ -7,6 +7,9 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using UltiDogeWebServer.App_Start;
 using UltiDogeWebServer.Models;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using Newtonsoft.Json.Linq;
 
 namespace UltiDogeWebServer.Controllers
 {
@@ -38,14 +41,16 @@ namespace UltiDogeWebServer.Controllers
             ViewBag.Message = "Your application description page.";
 
             var collection = context.db.GetCollection<DealsModel>("Benefits");
-
             var userBenefits = collection.Find(x => x.UserId == userId).ToList();
+
+            var domainAddress = GetDomainOnly(url);
+            var similarSites = GetSimilarSites(domainAddress);
 
             foreach (DealsModel userBenefit in userBenefits)
             {
                 foreach (string perk in userBenefit.Perks)
                 {
-                    if (url.ToLower().Contains(perk))
+                    if (similarSites.Contains(perk))
                     {
                         Tuple<string, string> userAndMessage =
                             new Tuple<string, string>(userId, userBenefit.Message);
@@ -127,6 +132,45 @@ namespace UltiDogeWebServer.Controllers
             ViewBag.Title = "Home Page";
 
             return View();
+        }
+
+        private List<string> GetSimilarSites(string currentSite)
+        {
+            var similarSites = new List<string>();
+            var url = $"https://alexa.com/find-similar-sites/data?site={currentSite}";
+            var responseString = "";
+
+            using (var client = new HttpClient())
+            {
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                var response = client.GetAsync(url).Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseContent = response.Content;
+                    responseString = responseContent.ReadAsStringAsync().Result;
+
+                    var jsonObject = JObject.Parse(responseString);
+                    var amazonSimilarSiteObjects = jsonObject.First.First.Children();
+
+                    foreach (var o in   )
+                    {
+                        try
+                        {
+                            var similarSite = o["site2"].ToString();
+                            similarSites.Add(similarSite);
+                        }
+                        catch { }
+                    }
+                }
+            }
+
+            return similarSites;
+        }
+
+        private string GetDomainOnly(string url)
+        {
+            return new Uri(url).Host.ToLower().Remove(0,4);
         }
     }
 }
