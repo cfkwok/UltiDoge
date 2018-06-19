@@ -34,8 +34,6 @@ namespace UltiDogeWebServer.Controllers
         [HttpGet]
         public ActionResult HasDealsInSite(string userId, string url)
         {
-            userId = "chunk";  //Temp
-
             List<ActionResult> jsonModels = new List<ActionResult>();
             ViewBag.Message = "Your application description page.";
 
@@ -95,9 +93,14 @@ namespace UltiDogeWebServer.Controllers
         [HttpGet]
         public ActionResult LoginToUltiPro(string userId, string password)
         {
-            //T.B.D. From db
-            if (userId.ToLower() == "ramesh1263")
-                return Json("Ramesh Chander", JsonRequestBehavior.AllowGet);
+            var collection = context.db.GetCollection<UserModel>("Users");
+            var user = collection.Find(x => x.UserId == userId).ToList();
+
+            if (user.Count > 0)
+            {
+                return Json(user[0].Name, JsonRequestBehavior.AllowGet);
+            }
+
             return Json("Failure", JsonRequestBehavior.AllowGet);
         }
 
