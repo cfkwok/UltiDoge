@@ -105,28 +105,51 @@ namespace UltiDogeWebServer.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetDealPage(string userId, string url)
+        public ActionResult GetAmazonPage(string userId, string url)
         {
-            ViewBag.Title = "Home Page";
-
+            return View();
+        }
+        [HttpGet]
+        public ActionResult GetHertzPage(string userId, string url)
+        {
             return View();
         }
 
         [HttpGet]
-        public ActionResult GetGiftCardPage(string userId, string url)
+        public ActionResult GetStarbucksGiftCardPage(string userId, string url)
         {
-            ViewBag.Title = "Home Page";
-
             return View();
         }
 
+        public ActionResult GetAmazonGiftCardPage(string userId, string url)
+        {
+            return View();
+        }
 
         [HttpGet]
-        public ActionResult GetCharityPage(string userId, string url)
+        public ActionResult GetRedCrossPage(string userId, string url)
         {
-            ViewBag.Title = "Home Page";
-
             return View();
         }
+
+        [HttpGet]
+        public ActionResult GetTeslaCharityPage(string userId, string url)
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult GetTeslaGiftCardPage(string userId, string url)
+        {
+            return View();
+        }
+
+        [HttpGet]
+        public ActionResult GetTeslaDeltaPage(string userId, string url)
+        {
+            return View();
+        }
+
+
     }
 }

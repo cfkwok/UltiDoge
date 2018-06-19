@@ -294,9 +294,15 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
-    <Content Include="Views\Home\GetCharityPage.cshtml" />
-    <Content Include="Views\Home\GetDealPage.cshtml" />
-    <Content Include="Views\Home\GetGiftCardPage.cshtml" />
+    <Content Include="Views\Home\GetRedCrossPage.cshtml" />
+    <Content Include="Views\Home\GetAmazonPage.cshtml" />
+    <Content Include="Views\Home\GetStarbucksGiftCardPage.cshtml" />
+    <Content Include="Views\Home\GetHertzPage.cshtml" />
+    <Content Include="Views\Home\GetAmazonGiftCardPage.cshtml" />
+    <Content Include="Views\Shared\_TeslaLayoutPage.cshtml" />
+    <Content Include="Views\Home\GetTeslaCharityPage.cshtml" />
+    <Content Include="Views\Home\GetTeslaGiftCardPage.cshtml" />
+    <Content Include="Views\Home\GetTeslaDeltaPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
