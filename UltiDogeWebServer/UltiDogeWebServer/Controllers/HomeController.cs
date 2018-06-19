@@ -30,7 +30,7 @@ namespace UltiDogeWebServer.Controllers
         }
 
         [HttpGet]
-        public ActionResult HasDealsInSite(string userId, string url)
+        public ActionResult HasDealsInSite(string userId, string url, int giftCardOption, int charityOption, int dealsOption)
         {
             userId = "chunk";  //Temp
 
