@@ -80,7 +80,7 @@ $(document).ready(function(){
 	//default values
 	if(!dealoption_token)
 	{
-		alert("Reinitialize");
+		//alert("Reinitialize");
 		localStorage["UltiProDealOption"]=2;
 		localStorage["UltiProCharityOption"]=3;
 		localStorage["UltiProGiftCardOption"]=3;
