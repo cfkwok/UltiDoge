@@ -37,20 +37,169 @@ namespace UltiDogeWebServer.Controllers
         [HttpGet]
         public ActionResult HasDealsInSite(string userId, string url, int giftCardOption, int charityOption, int dealsOption)
         {
-            List<DealsModel> dealModels = new List<DealsModel>();
             ViewBag.Message = "Your application description page.";
+            List<DealsModel> showingList = new List<DealsModel>();
+            bool giftCardSatisfied = giftCardOption == 0;
+            bool charitySatisfied = charityOption == 0;
+            bool dealsSatisfied = dealsOption == 0;
+
+            if (giftCardSatisfied && charitySatisfied && dealsSatisfied)
+            {
+                showingList.Add(new DealsModel()
+                {
+                    TypeOfDeal = string.Empty
+                });
+
+                return Json(showingList, JsonRequestBehavior.AllowGet);
+            }
 
             var collection = context.db.GetCollection<DealsModel>("Benefits");
             var userBenefits = collection.Find(x => x.UserId == userId).ToList();
 
+            List<DealsModel> mainMatchPerks = GetMainMatchPerks(url, userBenefits);
+
+            if (giftCardOption >= 1)
+            {
+                var giftCardMatch = mainMatchPerks.FirstOrDefault(x => x.TypeOfDeal.Equals("Gift Card"));
+                if (giftCardMatch != null)
+                {
+                    showingList.Add(giftCardMatch);
+                    giftCardSatisfied = true;
+                }
+            }
+
+            if (charityOption >= 1)
+            {
+                var charityMatch = mainMatchPerks.FirstOrDefault(x => x.TypeOfDeal.Equals("Charity"));
+                if (charityMatch != null)
+                {
+                    showingList.Add(charityMatch);
+                    charitySatisfied = true;
+                }
+            }
+
+            if (dealsOption >= 1)
+            {
+                var dealsMatch = mainMatchPerks.FirstOrDefault(x => x.TypeOfDeal.Equals("Discount"));
+                if (dealsMatch != null)
+                {
+                    showingList.Add(dealsMatch);
+                    dealsSatisfied = true;
+                }
+            }
+
+            if (giftCardSatisfied && charitySatisfied && dealsSatisfied)
+            {
+                if (showingList.Count == 0)
+                {
+                    showingList.Add(new DealsModel()
+                    {
+                        TypeOfDeal = string.Empty
+                    });
+                }
+
+                return Json(showingList, JsonRequestBehavior.AllowGet);
+            }
+
+            // One or more category is still not satisfied. Get relevant sites
+            List<DealsModel> relevantPerks = GetRelevantPerks(url, userBenefits);
+
+            if (giftCardOption == 2 && !giftCardSatisfied)
+            {
+                var giftCardMatch = relevantPerks.FirstOrDefault(x => x.TypeOfDeal.Equals("Gift Card"));
+                if (giftCardMatch != null)
+                {
+                    showingList.Add(giftCardMatch);
+                }
+            }
+
+            if (charityOption == 2 && !charitySatisfied)
+            {
+                var charityMatch = relevantPerks.FirstOrDefault(x => x.TypeOfDeal.Equals("Charity"));
+                if (charityMatch != null)
+                {
+                    showingList.Add(charityMatch);
+                }
+            }
+
+            if (dealsOption == 2 && !dealsSatisfied)
+            {
+                var dealsMatch = relevantPerks.FirstOrDefault(x => x.TypeOfDeal.Equals("Discount"));
+                if (dealsMatch != null)
+                {
+                    showingList.Add(dealsMatch);
+                }
+            }
+
+            if (showingList.Count == 0)
+            {
+                showingList.Add(new DealsModel()
+                {
+                    TypeOfDeal = string.Empty
+                });
+            }
+
+            return Json(showingList, JsonRequestBehavior.AllowGet);
+        }
+
+        private List<DealsModel> GetRelevantPerks(string url, List<DealsModel> userBenefits)
+        {
+            List<DealsModel> dealModels = new List<DealsModel>();
+            string userId = userBenefits[0]?.UserId;
+
             var domainAddress = GetDomainOnly(url);
             var similarSites = GetSimilarSites(domainAddress);
+
 
             foreach (DealsModel userBenefit in userBenefits)
             {
                 foreach (string perk in userBenefit.Perks)
                 {
                     if (similarSites.Contains(perk))
+                    {
+                        var message = $"{userBenefit.TypeOfDeal} found for similar website in your perk list. {perk} ";
+                        Tuple<string, string> userAndMessage =
+                            new Tuple<string, string>(userId, message);
+
+                        if (!popupTimers.ContainsKey(userAndMessage))
+                        {
+                            popupTimers.Add(userAndMessage, DateTime.Now);
+                            dealModels.Add(new DealsModel()
+                                {
+                                    TypeOfDeal = userBenefit.TypeOfDeal,
+                                    Message = message,
+                                    OnClickUrl = userBenefit.OnClickUrl
+                                }
+                            );
+                        }
+                        else if (popupTimers[userAndMessage].AddSeconds(10) < DateTime.Now)  // If this time has passed, then add the popup in list again
+                        {
+                            dealModels.Add(new DealsModel()
+                                {
+                                    TypeOfDeal = userBenefit.TypeOfDeal,
+                                    Message = message,
+                                    OnClickUrl = userBenefit.OnClickUrl
+                                }
+                            );
+                            popupTimers[userAndMessage] = DateTime.Now;
+                        }
+                    }
+                }
+            }
+
+            return dealModels;
+        }
+
+        private List<DealsModel> GetMainMatchPerks(string url, List<DealsModel> userBenefits)
+        {
+            List<DealsModel> dealModels = new List<DealsModel>();
+            string userId = userBenefits[0]?.UserId;
+
+            foreach (DealsModel userBenefit in userBenefits)
+            {
+                foreach (string perk in userBenefit.Perks)
+                {
+                    if (url.Contains(perk))
                     {
                         Tuple<string, string> userAndMessage =
                             new Tuple<string, string>(userId, userBenefit.Message);
@@ -81,15 +230,7 @@ namespace UltiDogeWebServer.Controllers
                 }
             }
 
-            if (dealModels.Count == 0)
-            {
-                dealModels.Add(new DealsModel()
-                {
-                    TypeOfDeal = string.Empty
-                });
-            }
-
-            return Json(dealModels, JsonRequestBehavior.AllowGet);
+            return dealModels;
         }
 
         [HttpGet]
@@ -135,7 +276,6 @@ namespace UltiDogeWebServer.Controllers
         {
             var similarSites = new List<string>();
             var url = $"https://alexa.com/find-similar-sites/data?site={currentSite}";
-            var responseString = "";
 
             using (var client = new HttpClient())
             {
@@ -145,17 +285,21 @@ namespace UltiDogeWebServer.Controllers
                 if (response.IsSuccessStatusCode)
                 {
                     var responseContent = response.Content;
-                    responseString = responseContent.ReadAsStringAsync().Result;
+                    var responseString = responseContent.ReadAsStringAsync().Result;
 
                     var jsonObject = JObject.Parse(responseString);
                     var amazonSimilarSiteObjects = jsonObject.First.First.Children();
 
-                    foreach (var o in   )
+                    foreach (var o in amazonSimilarSiteObjects)
                     {
                         try
                         {
                             var similarSite = o["site2"].ToString();
-                            similarSites.Add(similarSite);
+
+                            if (similarSite != currentSite)
+                            {
+                                similarSites.Add(similarSite);
+                            }
                         }
                         catch { }
                     }
