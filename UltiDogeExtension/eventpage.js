@@ -22,9 +22,12 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 			   type: "GET",
 			   success: function (result) {
 				   //alert("success->"+JSON.stringify(result));
+				   var foundPerk=0;
 				   for (var i = 0; i < result.length; i++) {
 				   		if (result[i]["TypeOfDeal"] != '') {
-					   		iconUrl = '';
+							iconUrl = '';
+							localStorage["UltiWebsitePerk"]=result[i]["OnClickUrl"];
+							foundPerk++;
 					   		
 					   		if (result[i]["TypeOfDeal"] == "Discount") {
 					   			iconUrl = 'https://pics.me.me/fat-doge-8386016.png';
@@ -48,6 +51,16 @@ chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
 							);						
 				   		}
 				   }
+				   if(foundPerk==0)
+				   {
+					   localStorage["UltiWebsitePerk"]="";
+					   chrome.browserAction.setBadgeText({ text: '' })
+				   }
+				   else
+				   {
+					   chrome.browserAction.setBadgeText({ text: ''+foundPerk });
+				   }
+				   
 			   }
 		   });
 
