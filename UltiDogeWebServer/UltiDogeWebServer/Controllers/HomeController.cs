@@ -64,6 +64,7 @@ namespace UltiDogeWebServer.Controllers
                 if (giftCardMatch != null)
                 {
                     showingList.Add(giftCardMatch);
+                    setCoolDown(giftCardMatch.UserId, giftCardMatch);
                     giftCardSatisfied = true;
                 }
             }
@@ -74,6 +75,7 @@ namespace UltiDogeWebServer.Controllers
                 if (charityMatch != null)
                 {
                     showingList.Add(charityMatch);
+                    setCoolDown(charityMatch.UserId, charityMatch);
                     charitySatisfied = true;
                 }
             }
@@ -84,6 +86,7 @@ namespace UltiDogeWebServer.Controllers
                 if (dealsMatch != null)
                 {
                     showingList.Add(dealsMatch);
+                    setCoolDown(dealsMatch.UserId, dealsMatch);
                     dealsSatisfied = true;
                 }
             }
@@ -110,6 +113,7 @@ namespace UltiDogeWebServer.Controllers
                 if (giftCardMatch != null)
                 {
                     showingList.Add(giftCardMatch);
+                    setCoolDown(giftCardMatch.UserId, giftCardMatch);
                 }
             }
 
@@ -119,6 +123,7 @@ namespace UltiDogeWebServer.Controllers
                 if (charityMatch != null)
                 {
                     showingList.Add(charityMatch);
+                    setCoolDown(charityMatch.UserId, charityMatch);
                 }
             }
 
@@ -128,6 +133,7 @@ namespace UltiDogeWebServer.Controllers
                 if (dealsMatch != null)
                 {
                     showingList.Add(dealsMatch);
+                    setCoolDown(dealsMatch.UserId, dealsMatch);
                 }
             }
 
@@ -150,7 +156,6 @@ namespace UltiDogeWebServer.Controllers
             var domainAddress = GetDomainOnly(url);
             var similarSites = GetSimilarSites(domainAddress);
 
-
             foreach (DealsModel userBenefit in userBenefits)
             {
                 foreach (string perk in userBenefit.Perks)
@@ -158,36 +163,52 @@ namespace UltiDogeWebServer.Controllers
                     if (similarSites.Contains(perk))
                     {
                         var message = $"{userBenefit.TypeOfDeal} found for similar website in your perk list. {perk} ";
-                        Tuple<string, string> userAndMessage =
-                            new Tuple<string, string>(userId, message);
 
-                        if (!popupTimers.ContainsKey(userAndMessage))
+                        var newUserBenefit = new DealsModel()
+                            {
+                                UserId = userBenefit.UserId,
+                                TypeOfDeal = userBenefit.TypeOfDeal,
+                                Message = message,
+                                OnClickUrl = userBenefit.OnClickUrl
+                            };
+
+                        if (!isOnCoolDown(userId, newUserBenefit))
                         {
-                            popupTimers.Add(userAndMessage, DateTime.Now);
-                            dealModels.Add(new DealsModel()
-                                {
-                                    TypeOfDeal = userBenefit.TypeOfDeal,
-                                    Message = message,
-                                    OnClickUrl = userBenefit.OnClickUrl
-                                }
-                            );
-                        }
-                        else if (popupTimers[userAndMessage].AddSeconds(10) < DateTime.Now)  // If this time has passed, then add the popup in list again
-                        {
-                            dealModels.Add(new DealsModel()
-                                {
-                                    TypeOfDeal = userBenefit.TypeOfDeal,
-                                    Message = message,
-                                    OnClickUrl = userBenefit.OnClickUrl
-                                }
-                            );
-                            popupTimers[userAndMessage] = DateTime.Now;
+                            dealModels.Add(newUserBenefit);
                         }
                     }
                 }
             }
 
             return dealModels;
+        }
+
+        private bool isOnCoolDown(string userId, DealsModel userBenefit)
+        {
+            Tuple<string, string> userAndMessage =
+                new Tuple<string, string>(userId, userBenefit.Message);
+
+            if (!popupTimers.ContainsKey(userAndMessage) || (popupTimers[userAndMessage].AddSeconds(10) < DateTime.Now))
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        private void setCoolDown(string userId, DealsModel userBenefit)
+        {
+            Tuple<string, string> userAndMessage =
+                new Tuple<string, string>(userId, userBenefit.Message);
+
+            if (!popupTimers.ContainsKey(userAndMessage))
+            {
+                popupTimers.Add(userAndMessage, DateTime.Now);
+            }
+            else if (popupTimers[userAndMessage].AddSeconds(10) < DateTime.Now) // If this time has passed, then add the popup in list again
+            {
+                popupTimers[userAndMessage] = DateTime.Now;
+            }
         }
 
         private List<DealsModel> GetMainMatchPerks(string url, List<DealsModel> userBenefits)
@@ -199,33 +220,9 @@ namespace UltiDogeWebServer.Controllers
             {
                 foreach (string perk in userBenefit.Perks)
                 {
-                    if (url.Contains(perk))
+                    if (url.Contains(perk) && !isOnCoolDown(userId, userBenefit))
                     {
-                        Tuple<string, string> userAndMessage =
-                            new Tuple<string, string>(userId, userBenefit.Message);
-
-                        if (!popupTimers.ContainsKey(userAndMessage))
-                        {
-                            popupTimers.Add(userAndMessage, DateTime.Now);
-                            dealModels.Add(new DealsModel()
-                                {
-                                    TypeOfDeal = userBenefit.TypeOfDeal,
-                                    Message = userBenefit.Message,
-                                    OnClickUrl = userBenefit.OnClickUrl
-                                }
-                            );
-                        }
-                        else if (popupTimers[userAndMessage].AddSeconds(10) < DateTime.Now)  // If this time has passed, then add the popup in list again
-                        {
-                            dealModels.Add(new DealsModel()
-                                {
-                                    TypeOfDeal = userBenefit.TypeOfDeal,
-                                    Message = userBenefit.Message,
-                                    OnClickUrl = userBenefit.OnClickUrl
-                                }
-                            );
-                            popupTimers[userAndMessage] = DateTime.Now;
-                        }
+                        dealModels.Add(userBenefit);
                     }
                 }
             }
@@ -392,7 +389,14 @@ namespace UltiDogeWebServer.Controllers
 
         private string GetDomainOnly(string url)
         {
-            return new Uri(url).Host.ToLower().Remove(0,4);
+            try
+            {
+                return new Uri(url).Host.ToLower().Remove(0, 4);
+            }
+            catch
+            {
+                return string.Empty;
+            }
         }
     }
 }
