@@ -234,6 +234,64 @@ namespace UltiDogeWebServer.Controllers
         }
 
         [HttpGet]
+        public ActionResult GetCompanyDiscounts()
+        {
+            var collection = context.db.GetCollection<DealsModel>("Benefits");
+            var userBenefits = collection.Find(_ => true).ToList().OrderBy(x => x.UserId).ThenBy(x => x.TypeOfDeal);
+
+            ViewBag.Title = "Discounts";
+
+            return View(userBenefits);
+        }
+
+        [HttpPost]
+        public ActionResult CreateMultiple(string file)
+        {
+            if(!string.IsNullOrEmpty(file))
+            {
+
+            }
+            return Redirect("/Home/GetCompanyDiscounts");
+        }
+
+        [HttpPost]
+        public ActionResult CreateDeal(string userid, string typeOfDeal, string onClickUrl, string message, string perks)
+        {
+            var newDeal = new DealsModel
+            {
+                Id = new ObjectId(),
+                UserId = userid, 
+                TypeOfDeal = typeOfDeal, 
+                OnClickUrl = onClickUrl, 
+                Message = message
+            };
+
+            var dealPerks = perks.Split(',').ToList();
+            newDeal.Perks = dealPerks;
+
+            var collection = context.db.GetCollection<DealsModel>("Benefits");
+
+            collection.InsertOne(newDeal);
+
+            return Redirect("/Home/GetCompanyDiscounts");
+        }
+
+        [HttpGet]
+        [ActionName("DeleteDeal")]
+        public ActionResult DeleteDeal(string id)
+        {
+            try
+            {
+                var objectId = new ObjectId(id);
+
+                var collection = context.db.GetCollection<DealsModel>("Benefits");
+                collection.DeleteOne(x => x.Id == objectId);
+            }
+            catch { }
+            return Redirect("/Home/GetCompanyDiscounts");
+        }
+
+        [HttpGet]
         public ActionResult LoginToUltiPro(string userId, string password)
         {
             var collection = context.db.GetCollection<UserModel>("Users");
