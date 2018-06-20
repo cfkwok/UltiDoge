@@ -2,3 +2,4 @@
 *.pdb
 **/UltiDogeWebServer.dll
 **/.suo
+**/*.cache
