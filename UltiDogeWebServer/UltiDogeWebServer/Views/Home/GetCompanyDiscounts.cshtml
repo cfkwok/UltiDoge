@@ -1,0 +1,118 @@
+﻿@model IEnumerable<UltiDogeWebServer.Models.DealsModel>
+
+@{
+    ViewBag.Title = "Manage Company Discounts";
+}
+
+<h2>Manage Company Discounts</h2>
+<br />
+<h4 style="font-weight:600">Add New Deal</h4>
+<form name="createDeal" action="CreateDeal" method="post">
+    <table class="table table-bordered table-hover">
+        <tr style="background-color:lightgray">
+            <th>
+                @Html.DisplayNameFor(model => model.UserId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TypeOfDeal)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OnClickUrl)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Message)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Perks)
+            </th>
+            <th></th>
+        </tr>
+        <tr>
+            <td>
+                <input type="text" name="userId" />
+            </td>
+            <td>
+                <fieldset>
+                    <select id="TypeOfDeal" name="TypeOfDeal">
+                        <option value="Charity">Charity</option>
+                        <option value="Discount">Discount</option>
+                        <option value="Gift Card">Gift Card</option>
+                    </select>
+                </fieldset>
+            </td>
+            <td>
+                <input type="text" name="onClickUrl" />
+            </td>
+            <td>
+                <input type="text" name="message" />
+            </td>
+            <td>
+                <input type="text" name="perks" />
+            </td>
+            <td align="center">
+                <input type="submit"/>
+                <input type="reset" value="Cancel"/>
+            </td>
+        </tr>
+    </table>
+</form>
+<h4 style="font-weight:600">Csv Import</h4>
+<form name="import" action="CreateMultiple" method="post">
+    <input type="file" name="fileName"/>
+    <br />
+    <input type="submit" />
+    <input type="reset" value="Cancel"/>
+</form>
+<br />
+<h4 style="font-weight:600">All Deals</h4>
+<table class="table table-bordered table-hover">
+    <tr style="background-color:lightgray">
+        <th>
+            @Html.DisplayNameFor(model => model.UserId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TypeOfDeal)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.OnClickUrl)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Message)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Perks)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.UserId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.TypeOfDeal)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.OnClickUrl)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Message)
+        </td>
+        <td>
+            <ul type="circle">
+                @foreach (var perk in item.Perks)
+                {
+                    <li>@perk</li>
+                }
+            </ul>
+        </td>
+        <td>
+            @*@Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+            @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |*@
+            @Html.ActionLink("Delete", "DeleteDeal", new { id = item.Id }, new { onclick = "return confirm('Are you sure you wish to delete this article?');" })
+        </td>
+    </tr>
+}
+
+</table>
