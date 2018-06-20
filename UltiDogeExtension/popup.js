@@ -44,7 +44,7 @@ function refreshDeals()
 {
 	chrome.tabs.getSelected(null, function(tab) {
         var tabUrl = tab.url;
-        var actionurl="http://localhost:10829/home/HasDealsInSite?url="+tabUrl+"&userId="+localStorage["UltiProUserId"]+"&giftCardOption="+localStorage["UltiProGiftCardOption"]+"&charityOption="+localStorage["UltiProCharityOption"]+"&dealsOption="+localStorage["UltiProDealOption"];
+        var actionurl="http://localhost:10829/home/HasDealsInSite?url="+tabUrl+"&userId="+localStorage["UltiProUserId"]+"&giftCardOption="+localStorage["UltiProGiftCardOption"]+"&charityOption="+localStorage["UltiProCharityOption"]+"&dealsOption="+localStorage["UltiProDealOption"]+"&forcePopup=true";
 
 	   $.ajax(
 		   {

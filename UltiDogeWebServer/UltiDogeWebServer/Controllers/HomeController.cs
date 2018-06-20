@@ -21,8 +21,6 @@ namespace UltiDogeWebServer.Controllers
 
         public HomeController()
         {
-//            context = new MongoContext();
-//            popupTimers = new Dictionary<Tuple<string, string>, DateTime>();
         }
 
         //Tools -> Options -> Debugging -> General and turn off the setting Enable JavaScript Debugging for ASP.NET
@@ -35,7 +33,7 @@ namespace UltiDogeWebServer.Controllers
         }
 
         [HttpGet]
-        public ActionResult HasDealsInSite(string userId, string url, int giftCardOption, int charityOption, int dealsOption)
+        public ActionResult HasDealsInSite(string userId, string url, int giftCardOption, int charityOption, int dealsOption, bool forcePopup = false)
         {
             ViewBag.Message = "Your application description page.";
             List<DealsModel> showingList = new List<DealsModel>();
@@ -56,7 +54,7 @@ namespace UltiDogeWebServer.Controllers
             var collection = context.db.GetCollection<DealsModel>("Benefits");
             var userBenefits = collection.Find(x => x.UserId == userId).ToList();
 
-            List<DealsModel> mainMatchPerks = GetMainMatchPerks(url, userBenefits);
+            List<DealsModel> mainMatchPerks = GetMainMatchPerks(url, userBenefits, forcePopup);
 
             if (giftCardOption >= 1)
             {
@@ -105,7 +103,7 @@ namespace UltiDogeWebServer.Controllers
             }
 
             // One or more category is still not satisfied. Get relevant sites
-            List<DealsModel> relevantPerks = GetRelevantPerks(url, userBenefits);
+            List<DealsModel> relevantPerks = GetRelevantPerks(url, userBenefits, forcePopup);
 
             if (giftCardOption == 2 && !giftCardSatisfied)
             {
@@ -148,7 +146,7 @@ namespace UltiDogeWebServer.Controllers
             return Json(showingList, JsonRequestBehavior.AllowGet);
         }
 
-        private List<DealsModel> GetRelevantPerks(string url, List<DealsModel> userBenefits)
+        private List<DealsModel> GetRelevantPerks(string url, List<DealsModel> userBenefits, bool forcePopup)
         {
             List<DealsModel> dealModels = new List<DealsModel>();
             string userId = userBenefits[0]?.UserId;
@@ -172,7 +170,7 @@ namespace UltiDogeWebServer.Controllers
                                 OnClickUrl = userBenefit.OnClickUrl
                             };
 
-                        if (!isOnCoolDown(userId, newUserBenefit))
+                        if (!isOnCoolDown(userId, newUserBenefit) || forcePopup)
                         {
                             dealModels.Add(newUserBenefit);
                         }
@@ -211,7 +209,7 @@ namespace UltiDogeWebServer.Controllers
             }
         }
 
-        private List<DealsModel> GetMainMatchPerks(string url, List<DealsModel> userBenefits)
+        private List<DealsModel> GetMainMatchPerks(string url, List<DealsModel> userBenefits, bool forcePopup)
         {
             List<DealsModel> dealModels = new List<DealsModel>();
             string userId = userBenefits[0]?.UserId;
@@ -220,7 +218,7 @@ namespace UltiDogeWebServer.Controllers
             {
                 foreach (string perk in userBenefit.Perks)
                 {
-                    if (url.Contains(perk) && !isOnCoolDown(userId, userBenefit))
+                    if (url.Contains(perk) && (!isOnCoolDown(userId, userBenefit) || forcePopup))
                     {
                         dealModels.Add(userBenefit);
                     }
