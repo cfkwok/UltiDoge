@@ -237,7 +237,9 @@ namespace UltiDogeWebServer.Controllers
         public ActionResult GetCompanyDiscounts()
         {
             var collection = context.db.GetCollection<DealsModel>("Benefits");
-            var userBenefits = collection.Find(_ => true).ToList().OrderBy(x => x.UserId).ThenBy(x => x.TypeOfDeal);
+            var userCollection = context.db.GetCollection<UserModel>("Users");
+            var usersOfUlimate= userCollection.Find(x=>x.Company== "Ultimate Software Inc.").ToList().Select(x=>x.UserId);
+            var userBenefits = collection.Find(x => usersOfUlimate.Contains(x.UserId) ).ToList().OrderBy(x => x.UserId).ThenBy(x => x.TypeOfDeal);
 
             ViewBag.Title = "Discounts";
 
